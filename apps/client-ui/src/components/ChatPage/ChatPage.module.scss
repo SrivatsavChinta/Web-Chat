@@ -1,0 +1,13 @@
+@use "../../styles/globals.scss";
+
+.chatPageWrapper {
+  background-color: var(--grey-senary);
+  inline-size: 70%;
+  block-size: 100%;
+  margin: var(--space-2);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}

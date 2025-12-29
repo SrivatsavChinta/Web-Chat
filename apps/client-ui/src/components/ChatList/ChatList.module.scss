@@ -1,0 +1,47 @@
+@use "../../styles/globals.scss";
+
+.chatListWrapper {
+  inline-size: 30%;
+  min-inline-size: 400px;
+  block-size: 100%;
+  background-color: var(--grey-quinary);
+
+  margin: var(--space-2);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: var(--space-12);
+
+  .searchBar {
+    inline-size: 100%;
+    block-size: 40px;
+  }
+
+  .conversationContainer {
+    margin-block-start: var(--space-18);
+    inline-size: 100%;
+    block-size: 84vh;
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    justify-content: flex-start;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--grey-quinary);
+      border-radius: var(--border-radius-md);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--white-secondary);
+      border-radius: var(--border-radius-md);
+    }
+
+    .separator {
+      opacity: 0.5;
+    }
+  }
+}

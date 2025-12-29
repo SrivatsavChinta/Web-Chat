@@ -1,0 +1,58 @@
+@use "../../styles/globals.scss";
+
+.header {
+  inline-size: 100%;
+  block-size: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-16);
+  background-color: transparent;
+  z-index: 1;
+
+  .imageContainer {
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: var(--border-radius-circle);
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+
+    .nameWrapper {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+
+      .name {
+        font-size: var(--font-size-14);
+        color: var(--white-primary);
+      }
+
+      .statusDot {
+        inline-size: 8px;
+        block-size: 8px;
+        border-radius: 50%;
+
+        &.online {
+          background-color: var(--green-tertiary);
+        }
+
+        &.offline {
+          background-color: var(--red-primary);
+        }
+      }
+    }
+  }
+}

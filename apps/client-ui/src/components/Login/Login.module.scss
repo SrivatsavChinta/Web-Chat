@@ -1,0 +1,40 @@
+@use "../../styles/globals.scss";
+
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  block-size: 100vh;
+  inline-size: var(--inline-size-100);
+  text-align: center;
+
+  .loginDialogBox {
+    background-color: var(--blue-primary);
+    color: var(--black-primary);
+    padding: var(--space-24);
+    border-radius: var(--border-radius-lg);
+    inline-size: 60%;
+    block-size: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-24);
+
+    .title {
+      margin-block-end: var(--space-8);
+      font-size: var(--font-size-xl);
+      font-weight: var(--text-weight-quaternary);
+      line-height: var(--line-height-secondary);
+    }
+
+    .error {
+      margin-block-start: var(--space-12);
+      color: var(--red-primary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--text-weight-secondary);
+      text-align: center;
+    }
+  }
+}

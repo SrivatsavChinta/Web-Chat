@@ -1,0 +1,70 @@
+@use "../../styles/globals.scss";
+
+.cardContainer {
+  inline-size: 100%;
+  block-size: 80px;
+  padding: var(--space-12);
+  margin-block-start: var(--space-8);
+  border-block-end: 1px solid var(--grey-primary);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--space-18);
+  overflow-x: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+
+  .imageContainer {
+    inline-size: 50px;
+    block-size: 50px;
+    border-radius: var(--border-radius-circle);
+    overflow: hidden;
+
+    img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .detailsContainer {
+    flex: 1;
+    min-inline-size: 0;
+    color: var(--white-primary);
+    display: flex;
+    justify-content: space-between;
+
+    .messagedetails {
+      min-inline-size: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-8);
+
+      .contactName {
+        font-size: var(--font-size-16);
+      }
+
+      .latestMessage {
+        font-size: var(--font-size-12);
+        inline-size: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-inline-size: 0;
+      }
+    }
+
+    .date {
+      font-size: var(--font-size-12);
+    }
+  }
+}
+
+.selected {
+  background-color: var(--blue-secondary);
+  border-radius: var(--border-radius-lg);
+  border-block-end: none;
+}

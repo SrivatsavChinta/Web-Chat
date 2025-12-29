@@ -1,0 +1,32 @@
+@use "../../styles/globals.scss";
+
+.searchBar {
+  inline-size: 100%;
+  block-size: 40px;
+
+  .inputGroup {
+    inline-size: 100%;
+
+    .iconWrapper {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+
+      .searchIcon {
+        color: var(--white-primary);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+      }
+    }
+
+    .searchInput {
+      font-size: var(--font-size-sm);
+      color: var(--white-primary);
+      border-radius: var(--border-radius-18);
+
+      &::placeholder {
+        color: var(--white-primary);
+      }
+    }
+  }
+}

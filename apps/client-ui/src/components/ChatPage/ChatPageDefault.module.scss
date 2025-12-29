@@ -1,0 +1,22 @@
+@use "../../styles/globals.scss";
+
+.defaultWrapper {
+  inline-size: 100%;
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-16);
+
+  .chatImageDefault {
+    inline-size: 30%;
+    block-size: auto;
+    opacity: 0.5;
+  }
+
+  .defaultTitle {
+    font-size: var(--font-size-28);
+    color: var(--grey-primary);
+  }
+}

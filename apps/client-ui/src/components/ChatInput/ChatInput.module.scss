@@ -1,0 +1,44 @@
+@use "../../styles/globals.scss";
+
+.messageWrapper {
+  inline-size: 80%;
+
+  .inputGroup {
+    inline-size: 100%;
+
+    .iconWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .sendIcon {
+        font-size: var(--font-size-lg);
+        color: var(--white-primary);
+        opacity: 0.5;
+      }
+
+      &.enableSend {
+        pointer-events: auto;
+        cursor: pointer;
+
+        :hover {
+          color: var(--blue-secondary);
+          opacity: 1;
+        }
+      }
+
+      &.disableSend {
+        pointer-events: none;
+        display: none;
+      }
+    }
+
+    .messageInput {
+      inline-size: 100%;
+      font-size: var(--font-size-sm);
+      color: var(--white-primary);
+      border-radius: var(--border-radius-18);
+      padding-inline-end: var(--space-24);
+    }
+  }
+}
