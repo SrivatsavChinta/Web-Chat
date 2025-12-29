@@ -19,9 +19,7 @@ export const ChatMessages = () => {
   }, []);
 
   useEffect(() => {
-    if (!newMessage) return;
-    if (!conversation) return;
-    if (!credentials) return;
+    if (!newMessage || !conversation || !credentials) return;
 
     if (
       newMessage.receiverId === credentials.sub &&
