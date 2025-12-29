@@ -2,7 +2,7 @@ import styles from "./ChatMessages.module.scss";
 import { useStore } from "../../store/Store";
 import { ChatBubble } from "../ChatBubble/ChatBubble";
 import { IMessage } from "../../store/IStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const ChatMessages = () => {
   const messages = useStore((state) => state.messages);
@@ -19,38 +19,35 @@ export const ChatMessages = () => {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!newMessage) return;
+    if (!conversation) return;
+    if (!credentials) return;
 
-    const handleMessage = (data: IMessage) => {
-      if (
-        data.receiverId === credentials?.sub &&
-        conversation?.conversationId === data.conversationId
-      ) {
-        setMessages((prev) => [...prev, data]);
-      }
-    };
-
-    socket.on("getMessage", handleMessage);
-
-    return () => {
-      socket.off("getMessage", handleMessage);
-    };
-  }, [setMessages]);
+    if (
+      newMessage.receiverId === credentials.sub &&
+      newMessage.conversationId === conversation.conversationId
+    ) {
+      setMessages([...messages, newMessage]);
+    }
+  }, [newMessage, conversation, credentials, setMessages]);
 
   return (
     <div className={styles.messageWrapper}>
+      <div className={styles.topSpacer}></div>
       {messages.map((message, index) => (
-        <>
-          {message.senderId === credentials?.sub ? (
-            <div className={styles.sent} key={index}>
-              <ChatBubble type="SENT" message={message} />
-            </div>
-          ) : (
-            <div className={styles.received} key={index}>
-              <ChatBubble type="RECEIVED" message={message} />
-            </div>
-          )}
-        </>
+        <div
+          key={`${message.senderId}-${index}`}
+          className={
+            message.senderId === credentials?.sub
+              ? styles.sent
+              : styles.received
+          }
+        >
+          <ChatBubble
+            type={message.senderId === credentials?.sub ? "SENT" : "RECEIVED"}
+            message={message}
+          />
+        </div>
       ))}
     </div>
   );

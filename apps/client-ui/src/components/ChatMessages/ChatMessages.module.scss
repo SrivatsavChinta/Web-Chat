@@ -1,13 +1,16 @@
 @use "../../styles/globals.scss";
 
 .messageWrapper {
+  .topSpacer {
+    flex-grow: 1;
+  }
+
   inline-size: var(--inline-size-100);
-  block-size: var(--block-size-100);
   display: flex;
-  flex-direction: column-reverse;
+  flex: 1;
+  flex-direction: column;
   justify-content: flex-start;
   gap: var(--space-8);
   padding-block-end: var(--space-12);
-  margin-block-end: var(--space-8);
   overflow-block: auto;
 }

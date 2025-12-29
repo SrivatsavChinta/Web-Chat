@@ -2,6 +2,10 @@
 
 .messageWrapper {
   inline-size: 80%;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background-color: var(--bg-transparent);
 
   .inputGroup {
     inline-size: 100%;

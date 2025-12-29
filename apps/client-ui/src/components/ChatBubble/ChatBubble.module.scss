@@ -3,7 +3,7 @@
 .messagesContainer {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  inline-size: 100%;
   padding-inline: var(--space-8);
 
   .sentMessage,
@@ -28,7 +28,7 @@
     margin-inline-end: var(--space-4);
   }
 
-  .recievedMessage {
+  .receivedMessage {
     align-self: flex-start;
     background-color: var(--grey-primary);
     margin-inline-end: auto;
