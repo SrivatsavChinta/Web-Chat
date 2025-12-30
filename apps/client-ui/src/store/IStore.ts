@@ -47,6 +47,7 @@ export interface IConversation {
   senderId: string;
   receiverId: string;
   conversationId: string | null;
+  message?: string;
 }
 
 export interface IMessage {

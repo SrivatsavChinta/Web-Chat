@@ -27,8 +27,6 @@ export const ConversationCard = (props: IConversationCardProps) => {
           <p className={styles.contactName}>{props.name}</p>
           <p className={styles.latestMessage}>{props.latestMessage}</p>
         </div>
-
-        <div className={styles.date}>{props.date}</div>
       </div>
     </div>
   );

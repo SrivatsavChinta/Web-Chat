@@ -23,7 +23,6 @@ export const ChatList = () => {
 
   const credentials = useStore((state) => state.credentials);
 
-  const conversation = useStore((state) => state.conversation);
   const setConversation = useStore((state) => state.setConversation);
 
   const socket = useStore((state) => state.socket);
@@ -40,11 +39,17 @@ export const ChatList = () => {
 
   async function getAllConversations(): Promise<IConversationResponse[]> {
     try {
+      if (!credentials?.sub) {
+        return [];
+      }
+
       const conversations = await conversationService.getAllConversations({
-        senderId: credentials?.sub!,
-        receiverId: credentials?.sub!,
+        senderId: credentials?.sub,
+        receiverId: credentials?.sub,
       });
       setAllConversations([...conversations]);
+      console.log(conversations);
+      return conversations;
     } catch (error) {
       console.log("error in getting all conversations", error);
       throw error;
@@ -55,7 +60,7 @@ export const ChatList = () => {
     e?.stopPropagation();
 
     if (!credentials?.sub) {
-      console.warn("User not authenticated");
+      console.log("User not authenticated");
       return;
     }
 
@@ -68,7 +73,7 @@ export const ChatList = () => {
       const conversation = await conversationService.getConversation(payload);
 
       if (!conversation || !conversation._id) {
-        console.warn("No conversation found, creating one...");
+        console.log("No conversation found, creating one...");
 
         const createdConversation =
           await conversationService.createConversation(payload);
@@ -117,17 +122,24 @@ export const ChatList = () => {
       <div className={styles.conversationContainer}>
         {users
           .filter((user) => user.sub !== credentials?.sub)
-          .map((user) => (
-            <ConversationCard
-              key={user.sub}
-              displayPicture={user.picture}
-              name={user.given_name}
-              latestMessage="Start chatting"
-              date="Today"
-              isSelected={user.sub === selectedChat?.sub}
-              onClick={(e) => handleChatClick(user, e)}
-            />
-          ))}
+          .map((user) => {
+            const latestConversation = allConversations.find(
+              (conversation) =>
+                conversation.members.includes(credentials!.sub) &&
+                conversation.members.includes(user.sub)
+            );
+
+            return (
+              <ConversationCard
+                key={user.sub}
+                displayPicture={user.picture}
+                name={user.given_name}
+                latestMessage={latestConversation?.message || "Start chatting"}
+                isSelected={user.sub === selectedChat?.sub}
+                onClick={(e) => handleChatClick(user, e)}
+              />
+            );
+          })}
       </div>
     </div>
   );

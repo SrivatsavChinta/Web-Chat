@@ -1,4 +1,4 @@
-import { ApiService } from "@shared";
+import { ApiService } from "@shared/services/ApiService";
 import { IMessage } from "../../store/IStore";
 const URL = "http://localhost:8000";
 

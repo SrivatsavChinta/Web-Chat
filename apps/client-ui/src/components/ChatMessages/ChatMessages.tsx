@@ -2,7 +2,7 @@ import styles from "./ChatMessages.module.scss";
 import { useStore } from "../../store/Store";
 import { ChatBubble } from "../ChatBubble/ChatBubble";
 import { IMessage } from "../../store/IStore";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 export const ChatMessages = () => {
   const messages = useStore((state) => state.messages);

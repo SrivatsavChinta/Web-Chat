@@ -22,7 +22,7 @@ export const ChatInput = () => {
 
   const handleSend = async () => {
     if (!validMessage || !currentConversation) return;
-    console.log("input value", inputValue);
+    console.log("input value:", inputValue);
 
     const message: IMessage = {
       senderId: currentConversation.senderId,
