@@ -1,56 +1,60 @@
 import { HttpMethod, IApiService } from "./IApiService";
 
 export class ApiService implements IApiService {
-  async get<TResponse>(url: string): Promise<TResponse> {
+  private async handleResponse<T>(response: Response): Promise<T> {
+    let data: unknown;
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return data as T;
+  }
+
+  public async get<TResponse>(url: string): Promise<TResponse> {
     const response = await fetch(url);
-    return response.json() as Promise<TResponse>;
+    return this.handleResponse<TResponse>(response);
   }
 
-  async post<TRequest, TResponse>(
+  public async post<TRequest, TResponse>(
     url: string,
     body: TRequest
   ): Promise<TResponse> {
-    try {
-      const response = await fetch(url, {
-        method: HttpMethod.POST,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+    const response = await fetch(url, {
+      method: HttpMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
-      return response.json() as Promise<TResponse>;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    return this.handleResponse<TResponse>(response);
   }
 
-  async put<TRequest, TResponse>(
+  public async put<TRequest, TResponse>(
     url: string,
     body: TRequest
   ): Promise<TResponse> {
-    try {
-      const response = await fetch(url, {
-        method: HttpMethod.PUT,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+    const response = await fetch(url, {
+      method: HttpMethod.PUT,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
-      return response.json() as Promise<TResponse>;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    return this.handleResponse<TResponse>(response);
   }
 
-  async delete<TResponse>(url: string): Promise<TResponse> {
+  public async delete<TResponse>(url: string): Promise<TResponse> {
     const response = await fetch(url, {
       method: HttpMethod.DELETE,
     });
 
-    return response.json() as Promise<TResponse>;
+    return this.handleResponse<TResponse>(response);
   }
 }

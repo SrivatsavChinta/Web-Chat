@@ -12,98 +12,47 @@ export interface IConversationResponse {
 }
 
 class ConversationService extends ApiService {
-  async createConversation(data: {
+  createConversation(data: {
     senderId: string;
     receiverId: string;
   }): Promise<void> {
-    try {
-      const response = await fetch(`${URL}/conversation/add`, {
-        method: "POST",
-        body: JSON.stringify({ data }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to create conversation (${response.status})`);
-      }
-      return response.json();
-    } catch (error) {
-      console.log("error in creating conversation", error);
-      throw error;
-    }
+    return this.post<{ data: { senderId: string; receiverId: string } }, void>(
+      `${URL}/conversation/add`,
+      { data }
+    );
   }
 
-  async getConversation(data: {
+  getConversation(data: {
     senderId: string;
     receiverId: string;
   }): Promise<IConversationResponse> {
-    try {
-      const response = await fetch(`${URL}/conversation/get`, {
-        method: "POST",
-        body: JSON.stringify({ data }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to get conversation (${response.status})`);
-      }
-      return response.json();
-    } catch (error) {
-      console.log("error in getting conversation", error);
-      throw error;
-    }
+    return this.post<
+      { data: { senderId: string; receiverId: string } },
+      IConversationResponse
+    >(`${URL}/conversation/get`, { data });
   }
 
-  async getAllConversations(data: {
+  getAllConversations(data: {
     senderId: string;
     receiverId: string;
   }): Promise<IConversationResponse[]> {
-    try {
-      const response = await fetch(`${URL}/conversation/all`, {
-        method: "POST",
-        body: JSON.stringify({ data }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to get all conversations (${response.status})`);
-      }
-      return response.json();
-    } catch (error) {
-      console.log("error in getting all conversations", error);
-      throw error;
-    }
+    return this.post<
+      { data: { senderId: string; receiverId: string } },
+      IConversationResponse[]
+    >(`${URL}/conversation/all`, { data });
   }
 
-  async addNewMessage(message: IMessage): Promise<IMessage> {
-    try {
-      const response = await fetch(`${URL}/message/add`, {
-        method: "POST",
-        body: JSON.stringify({ message }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to add new message (${response.status})`);
-      }
-      return response.json();
-    } catch (error) {
-      console.log("error in getting adding message", error);
-      throw error;
-    }
+  addNewMessage(message: IMessage): Promise<IMessage> {
+    return this.post<{ message: IMessage }, IMessage>(`${URL}/message/add`, {
+      message,
+    });
   }
 
-  async getMessages(conversationId: string): Promise<IMessage[]> {
-    try {
-      const response = await fetch(`${URL}/message/${conversationId}`, {
-        method: "POST",
-        body: JSON.stringify({ conversationId }),
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to get messages (${response.status})`);
-      }
-      return response.json();
-    } catch (error) {
-      console.log("error in getting messages", error);
-      throw error;
-    }
+  getMessages(conversationId: string): Promise<IMessage[]> {
+    return this.post<{ conversationId: string }, IMessage[]>(
+      `${URL}/message/${conversationId}`,
+      { conversationId }
+    );
   }
 }
 
