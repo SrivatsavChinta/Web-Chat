@@ -11,7 +11,7 @@ export const ChatHeader = () => {
 
   console.log("selectedChat.sub", selectedChat?.sub);
   console.log("activeUsers", activeUsers);
-  console.log("user online", userOnline);
+  console.log(`user ${selectedChat!.name}: online`);
 
   return (
     <header className={styles.header}>

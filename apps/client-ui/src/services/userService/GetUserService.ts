@@ -8,3 +8,6 @@ export class GetUserService extends ApiService {
     return this.get<ICredentials[]>(`${URL}/users`);
   }
 }
+
+const getUserService = new GetUserService();
+export { getUserService };

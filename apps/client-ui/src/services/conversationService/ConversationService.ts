@@ -1,5 +1,6 @@
 import { ApiService } from "@shared/services/ApiService";
 import { IMessage } from "../../store/IStore";
+
 const URL = "http://localhost:8000";
 
 export interface IConversationResponse {
@@ -15,31 +16,46 @@ class ConversationService extends ApiService {
   createConversation(data: {
     senderId: string;
     receiverId: string;
-  }): Promise<void> {
-    return this.post<{ data: { senderId: string; receiverId: string } }, void>(
-      `${URL}/conversation/add`,
-      { data }
-    );
+  }): Promise<IConversationResponse | string> {
+    return this.post<
+      { data: { senderId: string; receiverId: string } },
+      IConversationResponse | string
+    >(`${URL}/conversation/add`, {
+      data: {
+        senderId: data.senderId,
+        receiverId: data.receiverId,
+      },
+    });
   }
 
   getConversation(data: {
     senderId: string;
     receiverId: string;
-  }): Promise<IConversationResponse> {
+  }): Promise<IConversationResponse | null> {
     return this.post<
       { data: { senderId: string; receiverId: string } },
-      IConversationResponse
-    >(`${URL}/conversation/get`, { data });
+      IConversationResponse | null
+    >(`${URL}/conversation/get`, {
+      data: {
+        senderId: data.senderId,
+        receiverId: data.receiverId,
+      },
+    });
   }
 
   getAllConversations(data: {
     senderId: string;
-    receiverId: string;
+    receiverId?: string;
   }): Promise<IConversationResponse[]> {
     return this.post<
-      { data: { senderId: string; receiverId: string } },
+      { data: { senderId: string; receiverId?: string } },
       IConversationResponse[]
-    >(`${URL}/conversation/all`, { data });
+    >(`${URL}/conversation/all`, {
+      data: {
+        senderId: data.senderId,
+        receiverId: data.receiverId, // backend ignores this safely
+      },
+    });
   }
 
   addNewMessage(message: IMessage): Promise<IMessage> {
@@ -49,10 +65,7 @@ class ConversationService extends ApiService {
   }
 
   getMessages(conversationId: string): Promise<IMessage[]> {
-    return this.post<{ conversationId: string }, IMessage[]>(
-      `${URL}/message/${conversationId}`,
-      { conversationId }
-    );
+    return this.get<IMessage[]>(`${URL}/message/${conversationId}`);
   }
 }
 

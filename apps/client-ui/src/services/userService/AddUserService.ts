@@ -10,3 +10,6 @@ export class AddUserService extends ApiService {
     });
   }
 }
+
+const addUserService = new AddUserService();
+export { addUserService };

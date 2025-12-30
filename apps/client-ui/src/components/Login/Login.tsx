@@ -4,7 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useStore } from "../../store/Store";
 import type { ICredentials, IStore } from "../../store/IStore";
-import { AddUserService } from "../../services/userService/AddUserService";
+import { addUserService } from "../../services/userService/AddUserService";
 import type { ILoginResponse } from "./ILogin";
 import { STRINGS } from "@shared/constants/strings";
 
@@ -19,7 +19,6 @@ export const Login = () => {
       const decodedToken: ICredentials = jwtDecode<ICredentials>(
         response.credential
       );
-      const addUserService = new AddUserService();
       setCredentials(decodedToken);
       await addUserService.addUser(decodedToken);
     } catch (error) {

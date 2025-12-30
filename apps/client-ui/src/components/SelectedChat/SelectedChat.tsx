@@ -15,7 +15,7 @@ export const SelectedChat = () => {
 
     const getMessages = async () => {
       const messages = await conversationService.getMessages(
-        currentConversation.conversationId
+        currentConversation.conversationId!
       );
       setMessages(messages);
     };

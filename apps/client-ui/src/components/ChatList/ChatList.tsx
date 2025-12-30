@@ -1,7 +1,7 @@
 import styles from "./ChatList.module.scss";
 import { SearchBar } from "../SearchBar/SearchBar";
 import { useEffect, useState } from "react";
-import { GetUserService } from "../../services/userService/GetUserService";
+import { getUserService } from "../../services/userService/GetUserService";
 import { useStore } from "../../store/Store";
 import { ConversationCard } from "../ConversationCard/ConversationCard";
 import { ICredentials } from "../../store/IStore";
@@ -20,98 +20,97 @@ export const ChatList = () => {
 
   const selectedChat = useStore((state) => state.selectedChat);
   const setSelectedChat = useStore((state) => state.setSelectedChat);
-
   const credentials = useStore((state) => state.credentials);
-
   const setConversation = useStore((state) => state.setConversation);
-
   const socket = useStore((state) => state.socket);
 
-  async function getUsers(): Promise<void> {
-    const getUsersService = new GetUserService();
+  const getUsers = async () => {
     try {
-      const users = await getUsersService.getUsers();
+      const users = await getUserService.getUsers();
       setUsers(users);
     } catch (error) {
       console.error("error in getting users", error);
     }
-  }
+  };
 
-  async function getAllConversations(): Promise<IConversationResponse[]> {
+  const getAllConversations = async (): Promise<IConversationResponse[]> => {
+    if (!credentials?.sub) return [];
+
     try {
-      if (!credentials?.sub) {
-        return [];
-      }
-
       const conversations = await conversationService.getAllConversations({
-        senderId: credentials?.sub,
-        receiverId: credentials?.sub,
+        senderId: credentials.sub,
+        receiverId: credentials.sub,
       });
-      setAllConversations([...conversations]);
-      console.log(conversations);
+
+      setAllConversations(conversations);
       return conversations;
     } catch (error) {
-      console.log("error in getting all conversations", error);
-      throw error;
+      console.error("error in getting all conversations", error);
+      return [];
     }
-  }
+  };
 
   const handleChatClick = async (user: ICredentials, e?: React.MouseEvent) => {
     e?.stopPropagation();
+    if (!credentials?.sub) return;
 
-    if (!credentials?.sub) {
-      console.log("User not authenticated");
-      return;
-    }
+    const payload = {
+      senderId: credentials.sub,
+      receiverId: user.sub,
+    };
 
     try {
-      const payload = {
-        senderId: credentials.sub,
-        receiverId: user.sub,
-      };
-
-      const conversation = await conversationService.getConversation(payload);
+      let conversation: IConversationResponse | undefined =
+        (await conversationService.getConversation(payload)) ?? undefined;
 
       if (!conversation || !conversation._id) {
-        console.log("No conversation found, creating one...");
+        await conversationService.createConversation(payload);
 
-        const createdConversation =
-          await conversationService.createConversation(payload);
+        const conversations = await getAllConversations();
 
-        setConversation({
-          senderId: payload.senderId,
-          receiverId: payload.receiverId,
-          conversationId: createdConversation._id,
-        });
-      } else {
-        setConversation({
-          senderId: payload.senderId,
-          receiverId: payload.receiverId,
-          conversationId: conversation._id,
-        });
+        conversation = conversations.find(
+          (c) =>
+            c.members.includes(payload.senderId) &&
+            c.members.includes(payload.receiverId)
+        );
       }
+
+      if (!conversation?._id) {
+        console.error("Conversation not found");
+        return;
+      }
+
+      setConversation({
+        senderId: payload.senderId,
+        receiverId: payload.receiverId,
+        conversationId: conversation._id,
+      });
 
       setSelectedChat(user);
     } catch (error) {
       console.error("Failed to open conversation", error);
-      throw error;
     }
   };
 
+  const chatUsers = users.filter((user) => user.sub !== credentials?.sub);
+
   useEffect(() => {
-    if (!socket) return;
+    if (!credentials?.sub) return;
 
-    const refreshUsers = () => {
-      getUsers();
-      getAllConversations();
+    const wrapper = async () => {
+      await getUsers();
+      await getAllConversations();
     };
 
-    socket.on("getUsers", refreshUsers);
+    wrapper();
+  }, [credentials?.sub]);
 
-    return () => {
-      socket.off("getUsers", refreshUsers);
-    };
-  }, [socket]);
+  console.log("CURRENT USER:", credentials?.sub);
+  console.log("USERS:", users);
+  console.log("CHAT USERS:", chatUsers);
+  console.log("CONVERSATIONS:", allConversations);
+  console.table(users.map((u) => u.email));
+  console.log("Logged in user:", credentials?.sub);
 
   return (
     <div className={styles.chatListWrapper}>
@@ -120,26 +119,26 @@ export const ChatList = () => {
       </div>
 
       <div className={styles.conversationContainer}>
-        {users
-          .filter((user) => user.sub !== credentials?.sub)
-          .map((user) => {
-            const latestConversation = allConversations.find(
-              (conversation) =>
-                conversation.members.includes(credentials!.sub) &&
-                conversation.members.includes(user.sub)
-            );
+        {chatUsers.map((user) => {
+          const conversation = allConversations.find(
+            (c) =>
+              c.members.includes(credentials!.sub) &&
+              c.members.includes(user.sub)
+          );
 
-            return (
-              <ConversationCard
-                key={user.sub}
-                displayPicture={user.picture}
-                name={user.given_name}
-                latestMessage={latestConversation?.message || "Start chatting"}
-                isSelected={user.sub === selectedChat?.sub}
-                onClick={(e) => handleChatClick(user, e)}
-              />
-            );
-          })}
+          return (
+            <ConversationCard
+              key={user.sub}
+              displayPicture={user.picture}
+              name={user.given_name}
+              latestMessage={
+                conversation ? conversation.message : "Start chatting"
+              }
+              isSelected={user.sub === selectedChat?.sub}
+              onClick={(e) => handleChatClick(user, e)}
+            />
+          );
+        })}
       </div>
     </div>
   );
