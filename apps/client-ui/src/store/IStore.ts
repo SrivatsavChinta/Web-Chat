@@ -21,9 +21,6 @@ export interface IStore {
   credentials: ICredentials | null;
   setCredentials: (newCredentials: ICredentials | null) => void;
 
-  profileView: boolean;
-  setProfileView: (profileView: boolean) => void;
-
   users: ICredentials[];
   setUsers: (users: ICredentials[]) => void;
 

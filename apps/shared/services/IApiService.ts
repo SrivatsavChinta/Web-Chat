@@ -10,6 +10,4 @@ export const HttpMethod = {
   POST: "POST",
   PUT: "PUT",
   DELETE: "DELETE",
-} as const;
-
-export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
+};

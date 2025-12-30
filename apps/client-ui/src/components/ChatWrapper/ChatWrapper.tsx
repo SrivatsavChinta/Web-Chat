@@ -32,7 +32,7 @@ const ChatWrapper = () => {
       setSocket(null);
       setActiveUsers([]);
     };
-  }, [credentials?.sub]);
+  }, [credentials?.sub, credentials?.email, setActiveUsers, setSocket]);
 
   return <>{credentials ? <ChatContainer /> : <Login />}</>;
 };

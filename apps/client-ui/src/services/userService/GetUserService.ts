@@ -5,14 +5,20 @@ const URL = "http://localhost:8000";
 export class GetUserService {
   async getUsers(): Promise<ICredentials[]> {
     try {
-      const response = await fetch(`${URL}/users`);
+      const response = await fetch(`${URL}/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch users (${response.status})`);
+        throw new Error(`Request failed ${response.status}`);
       }
-      const res = await response.json();
-      return res;
+
+      return response.json();
     } catch (error) {
-      console.error("getUsers error:", error);
+      console.log("Cannot get users", error);
       throw error;
     }
   }

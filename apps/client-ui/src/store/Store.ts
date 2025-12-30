@@ -7,9 +7,6 @@ export const useStore = create<IStore>((set) => ({
   setCredentials: (newCredentials: ICredentials | null) =>
     set({ credentials: newCredentials }),
 
-  profileView: false,
-  setProfileView: (profileView: boolean) => set({ profileView }),
-
   users: [],
   setUsers: (users: ICredentials[]) => set({ users }),
 
