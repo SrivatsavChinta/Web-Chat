@@ -36,7 +36,13 @@ export const Login = () => {
       <div className={styles.loginDialogBox}>
         <h1 className={styles.title}>{STRINGS.loginTitle}</h1>
         <div>{STRINGS.loginSubtitle}</div>
-        <GoogleLogin onSuccess={loginSuccess} onError={loginFailure} />
+        <GoogleLogin
+          onSuccess={loginSuccess}
+          onError={loginFailure}
+          auto_select={false}
+          useOneTap={false}
+        />
+
         {loginError && (
           <div className={styles.error}>{STRINGS.loginErrorMessage}</div>
         )}

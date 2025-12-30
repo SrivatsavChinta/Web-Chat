@@ -1,6 +1,6 @@
 import styles from "./ChatList.module.scss";
 import { SearchBar } from "../SearchBar/SearchBar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getUserService } from "../../services/userService/GetUserService";
 import { useStore } from "../../store/Store";
 import { ConversationCard } from "../ConversationCard/ConversationCard";
@@ -22,7 +22,7 @@ export const ChatList = () => {
   const setSelectedChat = useStore((state) => state.setSelectedChat);
   const credentials = useStore((state) => state.credentials);
   const setConversation = useStore((state) => state.setConversation);
-  const socket = useStore((state) => state.socket);
+  const messages = useStore((state) => state.messages);
 
   const getUsers = async () => {
     try {
@@ -33,7 +33,9 @@ export const ChatList = () => {
     }
   };
 
-  const getAllConversations = async (): Promise<IConversationResponse[]> => {
+  const getAllConversations = useCallback(async (): Promise<
+    IConversationResponse[]
+  > => {
     if (!credentials?.sub) return [];
 
     try {
@@ -48,7 +50,7 @@ export const ChatList = () => {
       console.error("error in getting all conversations", error);
       return [];
     }
-  };
+  }, [credentials]);
 
   const handleChatClick = async (user: ICredentials, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -96,21 +98,17 @@ export const ChatList = () => {
 
   useEffect(() => {
     if (!credentials?.sub) return;
-
-    const wrapper = async () => {
-      await getUsers();
-      await getAllConversations();
-    };
-
-    wrapper();
+    getUsers();
   }, [credentials?.sub]);
 
-  console.log("CURRENT USER:", credentials?.sub);
-  console.log("USERS:", users);
-  console.log("CHAT USERS:", chatUsers);
-  console.log("CONVERSATIONS:", allConversations);
-  console.table(users.map((u) => u.email));
-  console.log("Logged in user:", credentials?.sub);
+  useEffect(() => {
+    if (!credentials?.sub) return;
+    const timeout = setTimeout(() => {
+      getAllConversations();
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [messages, credentials?.sub, getAllConversations]);
 
   return (
     <div className={styles.chatListWrapper}>

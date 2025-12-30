@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema({
   },
   family_name: {
     type: String,
-    required: true,
   },
   given_name: {
     type: String,

@@ -5,6 +5,8 @@ const URL = "http://localhost:8000";
 
 export class AddUserService extends ApiService {
   addUser(user: ICredentials): Promise<ICredentials> {
+    console.log("ADD USER CALLED:", user.email);
+
     return this.post<{ user: ICredentials }, ICredentials>(`${URL}/add`, {
       user,
     });
