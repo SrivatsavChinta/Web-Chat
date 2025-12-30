@@ -2,7 +2,7 @@ import styles from "./ChatMessages.module.scss";
 import { useStore } from "../../store/Store";
 import { ChatBubble } from "../ChatBubble/ChatBubble";
 import { IMessage } from "../../store/IStore";
-import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { IoArrowDown } from "react-icons/io5";
 import { STRINGS } from "@shared/constants/strings";
 
@@ -12,63 +12,62 @@ export const ChatMessages = () => {
   const credentials = useStore((state) => state.credentials);
   const conversation = useStore((state) => state.conversation);
   const socket = useStore((state) => state.socket);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [showScroll, setShowScroll] = useState(false);
 
-  const containerReference = useRef<HTMLDivElement | null>(null);
-  const [messageIndicator, setMessageIndicator] = useState(false);
-
-  const bottomTrue = () => {
-    const el = containerReference.current;
+  const isAtBottom = () => {
+    const el = containerRef.current;
     if (!el) return true;
     return el.scrollHeight - el.scrollTop - el.clientHeight < 60;
   };
 
   const scrollToBottom = () => {
-    const el = containerReference.current;
+    const el = containerRef.current;
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-    setMessageIndicator(false);
+    setShowScroll(false);
   };
 
   useLayoutEffect(() => {
-    const el = containerReference.current;
+    const el = containerRef.current;
     if (!el) return;
-
     el.scrollTo({ top: el.scrollHeight, behavior: "auto" });
-  }, [conversation?.conversationId, messages.length]);
+  }, [conversation?.conversationId]);
 
   useEffect(() => {
     if (!socket || !conversation || !credentials) return;
 
-    const onMessage = (data: IMessage) => {
+    const onMessage = (newMessage: IMessage) => {
       if (
-        data.conversationId !== conversation.conversationId ||
-        data.receiverId !== credentials.sub
+        newMessage.conversationId !== conversation.conversationId ||
+        newMessage.receiverId !== credentials.sub
       ) {
         return;
       }
 
-      setMessages([...messages, data]);
+      const shouldStickToBottom = isAtBottom();
+      setMessages([...messages, newMessage]);
 
-      const el = containerReference.current;
-      if (!el) return;
-
-      if (bottomTrue()) {
-        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-      } else {
-        setMessageIndicator(true);
-      }
+      requestAnimationFrame(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        if (shouldStickToBottom) {
+          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        } else {
+          setShowScroll(true);
+        }
+      });
     };
 
     socket.on("getMessage", onMessage);
-
     return () => {
       socket.off("getMessage", onMessage);
     };
   }, [socket, conversation, credentials, messages, setMessages]);
 
   return (
-    <div className={styles.messageWrapper} ref={containerReference}>
-      <div className={styles.topSpacer}></div>
+    <div className={styles.messageWrapper} ref={containerRef}>
+      <div className={styles.topSpacer} />
 
       {messages.map((message, index) => (
         <div
@@ -86,7 +85,7 @@ export const ChatMessages = () => {
         </div>
       ))}
 
-      {messageIndicator && (
+      {showScroll && (
         <div className={styles.newMessageIndicator} onClick={scrollToBottom}>
           {STRINGS.newMessagesIndicator} <IoArrowDown />
         </div>
