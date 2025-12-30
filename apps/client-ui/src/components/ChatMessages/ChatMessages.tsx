@@ -12,47 +12,49 @@ export const ChatMessages = () => {
   const credentials = useStore((state) => state.credentials);
   const conversation = useStore((state) => state.conversation);
   const socket = useStore((state) => state.socket);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const containerReference = useRef<HTMLDivElement | null>(null);
   const [showScroll, setShowScroll] = useState(false);
 
   const isAtBottom = () => {
-    const el = containerRef.current;
+    const el = containerReference.current;
     if (!el) return true;
     return el.scrollHeight - el.scrollTop - el.clientHeight < 60;
   };
 
   const scrollToBottom = () => {
-    const el = containerRef.current;
+    const el = containerReference.current;
     if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    el.scrollTop = el.scrollHeight;
     setShowScroll(false);
   };
 
   useLayoutEffect(() => {
-    const el = containerRef.current;
+    const el = containerReference.current;
     if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior: "auto" });
-  }, [conversation?.conversationId]);
+    el.scrollTop = el.scrollHeight;
+  }, [conversation?.conversationId, messages.length]);
+
+  useEffect(() => {
+    const el = containerReference.current;
+    if (!el) return;
+    const onScroll = () => {
+      setShowScroll(!isAtBottom());
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!socket || !conversation || !credentials) return;
-
-    const onMessage = (newMessage: IMessage) => {
-      if (
-        newMessage.conversationId !== conversation.conversationId ||
-        newMessage.receiverId !== credentials.sub
-      ) {
-        return;
-      }
-
-      const shouldStickToBottom = isAtBottom();
-      setMessages([...messages, newMessage]);
-
+    const onMessage = (incoming: IMessage) => {
+      if (incoming.conversationId !== conversation.conversationId) return;
+      const sender = incoming.senderId === credentials.sub;
+      const stickToBottom = sender || isAtBottom();
+      setMessages((prev) => [...prev, incoming]);
       requestAnimationFrame(() => {
-        const el = containerRef.current;
-        if (!el) return;
-        if (shouldStickToBottom) {
-          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        if (stickToBottom) {
+          scrollToBottom();
         } else {
           setShowScroll(true);
         }
@@ -63,10 +65,10 @@ export const ChatMessages = () => {
     return () => {
       socket.off("getMessage", onMessage);
     };
-  }, [socket, conversation, credentials, messages, setMessages]);
+  }, [socket, conversation, credentials, setMessages]);
 
   return (
-    <div className={styles.messageWrapper} ref={containerRef}>
+    <div className={styles.messageWrapper} ref={containerReference}>
       <div className={styles.topSpacer} />
 
       {messages.map((message, index) => (

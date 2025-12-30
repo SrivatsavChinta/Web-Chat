@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Socket } from "socket.io-client";
-import type { ICredentials, IStore, IConversation, IMessage } from "./IStore";
+import type { ICredentials, IStore, IConversation } from "./IStore";
 
 export const useStore = create<IStore>((set) => ({
   credentials: null,
@@ -18,8 +18,11 @@ export const useStore = create<IStore>((set) => ({
     set({ conversation }),
 
   messages: [],
-  setMessages: (messages: IMessage[]) => set({ messages }),
-
+  setMessages: (updater) =>
+    set((state) => ({
+      messages:
+        typeof updater === "function" ? updater(state.messages) : updater,
+    })),
   socket: null,
   setSocket: (socket: Socket | null) => set({ socket }),
 

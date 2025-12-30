@@ -31,7 +31,9 @@ export interface IStore {
   setConversation: (conversation: IConversation | null) => void;
 
   messages: IMessage[];
-  setMessages: (messages: IMessage[]) => void;
+  setMessages: (
+    messages: IMessage[] | ((prev: IMessage[]) => IMessage[])
+  ) => void;
 
   socket: Socket | null;
   setSocket: (socket: Socket | null) => void;
